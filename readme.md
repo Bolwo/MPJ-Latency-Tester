@@ -1,7 +1,10 @@
 *MPJ program to test the latency between workers and master*
 
-To run, ensure you have MPJ installed and setup, and then run:
+To run, ensure you have MPJ installed and setup, and then run (for multicore mode):
  - mpjrun -np *numberOfWorkers* MPJPing *PayloadSize* *numberOfTestsPerWorker*
+
+For cluster mode (with multiple pc's/servers):
+ - mpjrun -np 5 -dev niodev MPJPing 10 10
 
 For example;
  - mpjrun -np 10 MPJPing 10000 10
