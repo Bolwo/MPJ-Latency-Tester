@@ -61,7 +61,7 @@ public class MPJPing {
                     MPI.COMM_WORLD.Recv(recvBuf, 0, payloadSize, MPI.LONG, i, 0);
                     recieveTime[i] = System.nanoTime();
 
-                    if (i != 1) { //remove first run from results, as this is consistently an anomoly
+                    if (count != 1) { //remove first run from results, as this is consistently an anomoly
                         System.out.println(me + ": Send Time: " + sendTime[i]
                                 + " Recieved Time: " + recieveTime[i]
                                 + "Total Latency: " + (recieveTime[i] - sendTime[i]) + " Nanoseconds");
