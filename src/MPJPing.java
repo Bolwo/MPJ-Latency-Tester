@@ -22,9 +22,9 @@ public class MPJPing {
         System.out.println("Tests per worker: " + totalTests);
         System.out.println(me + " Initialised");
 
-        //int count = 0;
-        //while (count < totalTests) {
-            //count++;
+        int count = 0;
+        while (count < totalTests) {
+            count++;
 
             //Send back to master/recieve by master
             if (me == 0) {
@@ -33,46 +33,47 @@ public class MPJPing {
                 for (int i = 1; i < payloadSize; i++) {
                     sendBuf[i] = Integer.MAX_VALUE;
                 }
-                for(int i = 1; i<P; i++){
+                for (int i = 1; i < P; i++) {
                     sendTime[i] = System.nanoTime();
                     MPI.COMM_WORLD.Send(sendBuf, 0, payloadSize, MPI.LONG, i, 0);
                 }
                 System.out.println("sent to all workers");
             } else {
                 System.out.println(me + " waiting to recieve");
-                    long[] recvBuf = new long[payloadSize];
-                    MPI.COMM_WORLD.Recv(recvBuf, 0, payloadSize, MPI.LONG, 0, 0);
-                    
+                long[] recvBuf = new long[payloadSize];
+                MPI.COMM_WORLD.Recv(recvBuf, 0, payloadSize, MPI.LONG, 0, 0);
+
                 System.out.println(me + " RECIEVED");
 
             }
 
-            if(me > 0) {
-                                //send back
-                           System.out.println(me + "sending");     
-                long[] sendBuf = new long[] {0};
+            if (me > 0) {
+                //send back
+                System.out.println(me + "sending");
+                long[] sendBuf = new long[]{0};
                 MPI.COMM_WORLD.Send(sendBuf, 0, 1, MPI.LONG, 0, 0);
                 //send back now
                 System.out.println(me + " Sent back");
-                
-                
+
             } else {
-                for(int i = 1; i<P; i++){
+                for (int i = 1; i < P; i++) {
                     long[] recvBuf = new long[payloadSize];
                     MPI.COMM_WORLD.Recv(recvBuf, 0, payloadSize, MPI.LONG, i, 0);
                     recieveTime[i] = System.nanoTime();
-                    
-                    System.out.println(me + ": Send Time: " + sendTime[i]
-                            + " Recieved Time: " + recieveTime[i]
-                            + "Total Latency: " + (recieveTime[i] - sendTime[i]) + " Nanoseconds");
 
-                    writer.println(Long.toString((recieveTime[i] - sendTime[i])));
+                    if (i != 1) { //remove first run from results, as this is consistently an anomoly
+                        System.out.println(me + ": Send Time: " + sendTime[i]
+                                + " Recieved Time: " + recieveTime[i]
+                                + "Total Latency: " + (recieveTime[i] - sendTime[i]) + " Nanoseconds");
+
+                        writer.println(Long.toString((recieveTime[i] - sendTime[i])));
+                    }
                 }
             }
             if (me > 0) {
-                    
+
             }
-        //} 
+        }
 
         MPI.Finalize();
         writer.close();
